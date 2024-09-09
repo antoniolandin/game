@@ -5,9 +5,9 @@ int main (int argc, char *argv[]) {
 
     EntityManager entity_manager;
     
-    std::cout << entity_manager.living_entity_count() << std::endl;
+    std::cout << entity_manager.livingEntityCount() << std::endl;
     entity_manager.createEntity();
-    std::cout << entity_manager.living_entity_count() << std::endl;
+    std::cout << entity_manager.livingEntityCount() << std::endl;
     
     return 0;
 }
