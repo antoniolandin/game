@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-#Generate compile_commands.json
+# Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Create a symlink to the compile_commands.json file in the source directory
@@ -26,8 +26,8 @@ set(PROJECT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(SFML_DIR ".")  # Adjust this if SFML is in a different directory
 find_package(SFML 2.5 COMPONENTS graphics window system audio REQUIRED)
 
-# Specify the source files
-file(GLOB SRC_FILES "src/*.cpp")
+# Specify the source files, including all .cpp files in src and its subdirectories
+file(GLOB_RECURSE SRC_FILES "src/*.cpp")
 
 # Create the executable
 add_executable(${PROJECT_NAME} ${SRC_FILES})
@@ -60,3 +60,4 @@ add_custom_target(run
     DEPENDS ${PROJECT_NAME}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin
 )
+
