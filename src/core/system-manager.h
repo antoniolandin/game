@@ -14,14 +14,14 @@ private:
 
 public:
     template <typename T>
-    std::shared_ptr<T> registerSystem()
+    std::shared_ptr<T> registerSystem(Coordinator* coordinator)
     {
         const char* type_name = typeid(T).name();
 
         assert(m_systems.find(type_name) == m_systems.end() && "Registering system more than once.");
 
         // create a pointer to the system and return it so it can be used externally
-        auto system = std::make_shared<T>();
+        auto system = std::make_shared<T>(coordinator);
         m_systems.insert({ type_name, system });
         return system;
     }
