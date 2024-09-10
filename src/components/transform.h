@@ -2,4 +2,5 @@
 
 struct Transform {
     Vec2 position;
+    Vec2 velocity;
 };
