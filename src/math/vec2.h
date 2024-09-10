@@ -27,6 +27,9 @@ public:
     void operator*=(const float scalar);
     void operator/=(const float scalar);
 
+    Vec2 operator*(const float scalar) const;
+    Vec2 operator/(const float scalar) const;
+
     void normalize();
     const std::string str() const;
     float squared_distance(const Vec2& rhs) const;
