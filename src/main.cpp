@@ -1,18 +1,10 @@
-#include "core/coordinator.h"
-#include "components/transform.h"
-#include <iostream>
-
-Coordinator g_coordinator;
+#include "game/game-engine.h"
 
 int main (int argc, char *argv[]) {
+    
+    GameEngine game_engine {};
 
-    g_coordinator.init();
-
-    g_coordinator.registerComponent<Transform>();
-
-    std::cout << "Number of entities: " << g_coordinator.numEntities() << std::endl;
-    g_coordinator.createEntity(); 
-    std::cout << "Number of entities: " << g_coordinator.numEntities() << std::endl;
-
+    game_engine.run();
+    
     return 0;
 }
