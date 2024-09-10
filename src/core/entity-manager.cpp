@@ -48,7 +48,7 @@ Signature EntityManager::getSignature(Entity entity)
     return m_signatures[entity];
 }
 
-uint32_t EntityManager::livingEntityCount()
+std::uint32_t EntityManager::livingEntityCount()
 {
     return m_living_entity_count;
 }
