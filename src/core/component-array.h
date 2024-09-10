@@ -76,6 +76,7 @@ public:
         return m_component_array[m_entity_to_index_map[entity]];
     }
     
+    // remove the entity component from the array if it had the component
     void entityDestroyed(Entity entity) override
     {
         // check that the entity has a component
