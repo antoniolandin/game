@@ -12,6 +12,7 @@ protected:
     std::shared_ptr<Scene> m_current_scene;
     std::unordered_map<std::string, std::shared_ptr<Scene>> m_scenes;
     bool m_running = true;
+    float m_delta_time {};
 
     void userInput();
 
@@ -21,6 +22,7 @@ public:
 
     // getters
     sf::RenderWindow& window();
+    const float dt() const;
 
     // scene management
     void registerScene(const std::string& name, std::shared_ptr<Scene> scene);

@@ -7,7 +7,7 @@ GameEngine::GameEngine()
 {
     // create the window
     m_window.create(sf::VideoMode(800, 600), "Game");
-    m_window.setFramerateLimit(60);
+    // m_window.setFramerateLimit(240);
 
     registerScene("play", std::make_shared<ScenePlay>(this));
     changeScene("play");
@@ -16,6 +16,11 @@ GameEngine::GameEngine()
 sf::RenderWindow& GameEngine::window()
 {
     return m_window;
+}
+
+const float GameEngine::dt() const
+{
+    return m_delta_time;
 }
 
 void GameEngine::userInput()
@@ -83,6 +88,8 @@ void GameEngine::quit()
 
 void GameEngine::run()
 {
+    sf::Clock clock;
+
     assert(m_current_scene && "No scene set.");
 
     while (m_running) {
@@ -90,5 +97,7 @@ void GameEngine::run()
         m_current_scene->update();
         m_current_scene->render();
         m_window.display();
+
+        m_delta_time = clock.restart().asSeconds();
     }
 }
