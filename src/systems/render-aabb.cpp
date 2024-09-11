@@ -25,7 +25,7 @@ void RenderAABB::initEntity(Entity entity)
 // update all entities
 void RenderAABB::update()
 {
-    for (auto& entity : m_entities) {
+    for (auto const& entity : m_entities) {
         auto& transform = m_coordinator->getComponent<Transform>(entity);
         auto& rect_shape = m_coordinator->getComponent<RectShape>(entity);
         auto& renderable = m_coordinator->getComponent<Renderable>(entity);
