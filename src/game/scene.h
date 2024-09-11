@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
 #include "action.h"
 #include "core/coordinator.h"
+#include <unordered_map>
 
 class GameEngine;
 
@@ -13,9 +13,8 @@ protected:
     std::unordered_map<std::uint16_t, std::string> m_actions {};
     bool m_paused {};
     size_t m_current_frame {};
-    
+
     // setters
-    void setPaused(bool paused);
     void registerAction(std::uint16_t input_code, const std::string& action_name);
 
 public:

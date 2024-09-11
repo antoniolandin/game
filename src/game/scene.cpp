@@ -2,7 +2,7 @@
 #include "game/game-engine.h"
 #include <cassert>
 
-Scene::Scene(GameEngine* game_engine)
+Scene::Scene(GameEngine *game_engine)
     : m_game_engine(game_engine)
 {
 }
@@ -11,11 +11,6 @@ void Scene::registerAction(std::uint16_t input_code, const std::string& name)
 {
     assert(m_actions.find(input_code) == m_actions.end() && "Action already exists.");
     m_actions[input_code] = name;
-}
-
-void Scene::setPaused(bool paused)
-{
-    m_paused = paused;
 }
 
 size_t Scene::width() const
