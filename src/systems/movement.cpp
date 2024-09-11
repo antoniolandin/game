@@ -1,8 +1,8 @@
 #include "movement.h"
 
-#include "core/coordinator.h"
 #include "components/input.h"
 #include "components/transform.h"
+#include "core/coordinator.h"
 
 void Movement::init()
 {
@@ -17,20 +17,18 @@ Vec2 velocityFromInput(const Input& input)
     if (input.up) {
         velocity.y -= 1;
         count++;
-    }
-    else if (input.down) {
+    } else if (input.down) {
         velocity.y += 1;
         count++;
     }
     if (input.left) {
         velocity.x -= 1;
         count++;
-    }
-    else if (input.right) {
+    } else if (input.right) {
         velocity.x += 1;
         count++;
     }
-    
+
     // normaliza if the velocity is diagonal
     if (count > 1) {
         velocity /= 1.41421356;
@@ -41,14 +39,18 @@ Vec2 velocityFromInput(const Input& input)
 
 void Movement::update(float dt)
 {
-    for (auto& entity : m_entities) {
+    for (auto const& entity : m_entities) {
         auto& transform = m_coordinator->getComponent<Transform>(entity);
         auto& input = m_coordinator->getComponent<Input>(entity);
+        
+        // store the previous position
+        Vec2 previous_position = transform.position;
 
         // get the velocity
         Vec2 velocity = velocityFromInput(input);
 
         // update the position
         transform.position += velocity * transform.speed * dt;
+        transform.previous_position = previous_position;
     }
 }
