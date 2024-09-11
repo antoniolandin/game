@@ -34,5 +34,7 @@ public:
     const std::string str() const;
     float squared_distance(const Vec2& rhs) const;
     float magnitude() const;
+    void abs();
+    static Vec2 abs(const Vec2& vec);
     void print() const;
 };

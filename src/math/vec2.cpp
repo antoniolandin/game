@@ -107,7 +107,18 @@ float Vec2::magnitude() const
     return std::sqrt(x * x + y * y);
 }
 
+void Vec2::abs()
+{
+    x = std::abs(x);
+    y = std::abs(y);
+}
+
+Vec2 Vec2::abs(const Vec2& vec) {
+    return Vec2(std::abs(vec.x), std::abs(vec.y));
+}
+
 void Vec2::print() const
 {
     std::cout << str() << std::endl;
 }
+
