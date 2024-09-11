@@ -7,7 +7,6 @@
 #include "game/game-engine.h"
 #include "systems/render-aabb.h"
 #include <SFML/Window/Keyboard.hpp>
-#include <iostream>
 
 ScenePlay::ScenePlay(GameEngine* game_engine)
     : Scene(game_engine)
@@ -20,12 +19,16 @@ ScenePlay::ScenePlay(GameEngine* game_engine)
 
     // spawn player
     spawnPlayer();
+
+    // spawn test enemy
+    spawnEnemy();
 }
 
 void ScenePlay::registration()
 {
     // register actions
     registerAction(sf::Keyboard::Escape, "QUIT");
+    registerAction(sf::Keyboard::P, "PAUSE");
     registerAction(sf::Keyboard::W, "MOVE_UP");
     registerAction(sf::Keyboard::S, "MOVE_DOWN");
     registerAction(sf::Keyboard::A, "MOVE_LEFT");
@@ -58,6 +61,15 @@ void ScenePlay::registration()
         m_coordinator.setSystemSignature<Movement>(signature);
     }
     m_movement_system->init();
+
+    m_collision_system = m_coordinator.registerSystem<Collision>();
+    {
+        Signature signature;
+        signature.set(m_coordinator.getComponentType<Transform>());
+        signature.set(m_coordinator.getComponentType<AABB>());
+        m_coordinator.setSystemSignature<Collision>(signature);
+    }
+    m_collision_system->init();
 }
 
 void ScenePlay::spawnPlayer()
@@ -69,7 +81,7 @@ void ScenePlay::spawnPlayer()
     float player_speed = 200;
 
     m_coordinator.addComponent(m_player, AABB { player_size, player_size / 2 });
-    m_coordinator.addComponent(m_player, Transform { window_center, Vec2(0, 0), player_speed });
+    m_coordinator.addComponent(m_player, Transform { window_center, window_center, Vec2(0, 0), player_speed });
     m_coordinator.addComponent(m_player, RectShape {});
     m_coordinator.addComponent(m_player, Renderable { &m_game_engine->window() });
     m_coordinator.addComponent(m_player, Input {});
@@ -77,11 +89,29 @@ void ScenePlay::spawnPlayer()
     m_render_aabb_system->initEntity(m_player);
 }
 
+void ScenePlay::spawnEnemy()
+{
+    Entity enemy = m_coordinator.createEntity();
+
+    Vec2 enemy_size = Vec2(64, 64);
+    Vec2 enemy_position = Vec2(width() / 4.f, height() / 4.f);
+    float enemy_speed = 100;
+
+    m_coordinator.addComponent(enemy, AABB { enemy_size, enemy_size / 2 });
+    m_coordinator.addComponent(enemy, Transform { enemy_position, enemy_position, Vec2(0, 0), enemy_speed });
+    m_coordinator.addComponent(enemy, RectShape {});
+    m_coordinator.addComponent(enemy, Renderable { &m_game_engine->window() });
+
+    m_render_aabb_system->initEntity(enemy);
+}
+
 void ScenePlay::doAction(const Action& action)
 {
     if (action.type == ACTION_START) {
         if (action.name == "QUIT") {
             m_game_engine->quit();
+        } else if (action.name == "PAUSE") {
+            m_paused = !m_paused;
         } else if (action.name == "MOVE_UP") {
             m_coordinator.getComponent<Input>(m_player).up = true;
         } else if (action.name == "MOVE_DOWN") {
@@ -112,5 +142,8 @@ void ScenePlay::render()
 
 void ScenePlay::update()
 {
-    m_movement_system->update(m_game_engine->dt());
+    if (!m_paused) {
+        m_movement_system->update(m_game_engine->dt());
+        m_collision_system->update();
+    }
 }
