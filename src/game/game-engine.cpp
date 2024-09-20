@@ -8,7 +8,8 @@ GameEngine::GameEngine()
     // create the window
     m_window.create(sf::VideoMode(800, 600), "Game");
     // m_window.setFramerateLimit(240);
-
+    
+    // create the play scene
     registerScene("play", std::make_shared<ScenePlay>(this));
     changeScene("play");
 }
