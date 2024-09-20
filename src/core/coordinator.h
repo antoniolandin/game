@@ -3,6 +3,7 @@
 #include "component-manager.h"
 #include "entity-manager.h"
 #include "system-manager.h"
+#include "asset-manager.h"
 #include "types.h"
 #include <memory>
 
@@ -11,6 +12,7 @@ private:
     std::unique_ptr<ComponentManager> m_component_manager;
     std::unique_ptr<EntityManager> m_entity_manager;
     std::unique_ptr<SystemManager> m_system_manager;
+    std::unique_ptr<AssetManager> m_asset_manager;
 
 public:
     void init()
@@ -19,6 +21,7 @@ public:
         m_component_manager = std::make_unique<ComponentManager>();
         m_entity_manager = std::make_unique<EntityManager>();
         m_system_manager = std::make_unique<SystemManager>();
+        m_asset_manager = std::make_unique<AssetManager>();
     }
 
     // entity methods
@@ -99,5 +102,16 @@ public:
     void setSystemSignature(Signature signature)
     {
         m_system_manager->setSignature<T>(signature);
+    }
+
+    // asset methods
+    void addTexture(const std::string& name, const std::string& path)
+    {
+        m_asset_manager->addTexture(name, path);
+    }
+
+    sf::Texture& getTexture(const std::string& name)
+    {
+        return m_asset_manager->getTexture(name);
     }
 };
