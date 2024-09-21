@@ -1,14 +1,17 @@
 #include "scene-play.h"
+#include "core/types.h"
 #include "components/aabb.h"
+#include "components/idle.h"
 #include "components/input.h"
 #include "components/rect-shape.h"
 #include "components/renderable.h"
 #include "components/sprite.h"
 #include "components/transform.h"
+#include "components/facing.h"
 #include "game/game-engine.h"
-#include "systems/render-aabb.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <filesystem>
+#include <iostream>
 
 ScenePlay::ScenePlay(GameEngine* game_engine)
     : Scene(game_engine)
@@ -43,6 +46,8 @@ void ScenePlay::registration()
     m_coordinator.registerComponent<Renderable>();
     m_coordinator.registerComponent<Input>();
     m_coordinator.registerComponent<Sprite>();
+    m_coordinator.registerComponent<Idle>();
+    m_coordinator.registerComponent<Facing>();
 
     // register systems
     m_render_aabb_system = m_coordinator.registerSystem<RenderAABB>();
@@ -74,7 +79,6 @@ void ScenePlay::registration()
     }
     m_collision_system->init();
 
-    // render sprite system
     m_render_sprite_system = m_coordinator.registerSystem<RenderSprite>();
     {
         Signature signature;
@@ -85,9 +89,41 @@ void ScenePlay::registration()
     }
     m_render_sprite_system->init();
 
-    // register assets
+    m_idle_system = m_coordinator.registerSystem<IdleSystem>();
+    {
+        Signature signature;
+        signature.set(m_coordinator.getComponentType<Idle>());
+        signature.set(m_coordinator.getComponentType<Sprite>());
+        signature.set(m_coordinator.getComponentType<Transform>());
+        signature.set(m_coordinator.getComponentType<Facing>());
+        m_coordinator.setSystemSignature<IdleSystem>(signature);
+    }
+    m_idle_system->init();
+
+    // register tileset texture
     std::filesystem::path project_root = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path();
     m_coordinator.addTexture("zombie_tileset", project_root / "assets/tileset.png");
+}
+
+// get the sprite from the zombie tileset (it has weird spacing)
+sf::IntRect ScenePlay::getSpriteRectFromZombieTileset(const Entity entity, const int x, const int y)
+{
+    // get the sprite component
+    auto& sprite = m_coordinator.getComponent<Sprite>(entity);
+
+    // define the tileset properties
+    const int tile_width = 16;
+    const int tile_height = 16;
+    const int tile_spacing_x = 1;
+    const float tile_spacing_y = 3;
+    const float scale = 4;
+
+    // calculate the position of the sprite in the tileset
+    const int posX = (x * tile_width) + (x * tile_spacing_x);
+    const int posY = (y * tile_height) + (y * tile_spacing_y);
+
+    // generate the sprite from the tileset using the position and size
+    return sf::IntRect(posX, posY, tile_width, tile_height);
 }
 
 void ScenePlay::spawnPlayer()
@@ -101,9 +137,22 @@ void ScenePlay::spawnPlayer()
     m_coordinator.addComponent(m_player, AABB { player_size, player_size / 2 });
     m_coordinator.addComponent(m_player, Transform { window_center, window_center, Vec2(0, 0), player_speed });
     m_coordinator.addComponent(m_player, RectShape {});
-    m_coordinator.addComponent(m_player, Sprite { {}, "zombie_tileset", 28, 10});
     m_coordinator.addComponent(m_player, Renderable { &m_game_engine->window() });
     m_coordinator.addComponent(m_player, Input {});
+    m_coordinator.addComponent(m_player, Facing { DOWN });
+
+    m_coordinator.addComponent(m_player, Sprite {{}, "zombie_tileset", 4});
+
+    std::cout << m_coordinator.getComponent<Sprite>(m_player).tileset_name << std::endl;
+
+    m_coordinator.addComponent(m_player, Idle {
+        {
+            {UP, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 8)}},
+            {DOWN, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 9)}},
+            {LEFT, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 10), true}},
+            {RIGHT, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 10)}}
+        }
+    });
 
     m_render_aabb_system->initEntity(m_player);
     m_render_sprite_system->initEntity(m_player);
@@ -134,12 +183,16 @@ void ScenePlay::doAction(const Action& action)
             m_paused = !m_paused;
         } else if (action.name == "MOVE_UP") {
             m_coordinator.getComponent<Input>(m_player).up = true;
+            m_coordinator.getComponent<Facing>(m_player).direction = UP;
         } else if (action.name == "MOVE_DOWN") {
             m_coordinator.getComponent<Input>(m_player).down = true;
+            m_coordinator.getComponent<Facing>(m_player).direction = DOWN;
         } else if (action.name == "MOVE_LEFT") {
             m_coordinator.getComponent<Input>(m_player).left = true;
+            m_coordinator.getComponent<Facing>(m_player).direction = LEFT;
         } else if (action.name == "MOVE_RIGHT") {
             m_coordinator.getComponent<Input>(m_player).right = true;
+            m_coordinator.getComponent<Facing>(m_player).direction = RIGHT;
         }
     } else if (action.type == ACTION_END) {
         if (action.name == "MOVE_UP") {
@@ -159,6 +212,7 @@ void ScenePlay::render()
     m_game_engine->window().clear(sf::Color::White);
     m_render_sprite_system->update();
     m_render_aabb_system->update();
+    m_idle_system->update();
     m_render_sprite_system->update();
 }
 

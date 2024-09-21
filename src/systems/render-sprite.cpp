@@ -7,34 +7,11 @@
 void RenderSprite::init() {
 }
 
-// get the sprite from the zombie tileset (it has weird spacing)
-void RenderSprite::getSpriteFromZombieTileset(const Entity entity) {
-    // get the sprite component
+void RenderSprite::initEntity(Entity entity) {
     auto& sprite = m_coordinator->getComponent<Sprite>(entity);
-
-    // get the texture from the asset manager
-    auto& texture = m_coordinator->getTexture(sprite.tileset_name);
-    
-    // define the tileset properties
-    const int tile_width = 16;
-    const int tile_height = 16;
-    const int tile_spacing_x = 1;
-    const float tile_spacing_y = 1.5;
-    const float scale = 4;
-
-    // calculate the position of the sprite in the tileset
-    const int posX = ((sprite.posX + 1) * tile_width) + (sprite.posX * tile_spacing_x) + 1;
-    const int posY = ((sprite.posY + 1) * tile_height) + (sprite.posY * tile_spacing_y) - 1;
-
-    // generate the sprite from the tileset using the position and size
-    sprite.sprite.setTexture(texture, true);
-    sprite.sprite.setScale(scale, scale);
-    sprite.sprite.setTextureRect(sf::IntRect(posX, posY, tile_width, tile_height));
-    sprite.sprite.setOrigin(tile_width / 2.f, tile_height / 2.f);
-}
-
-void RenderSprite::initEntity(const Entity entity) {
-    getSpriteFromZombieTileset(entity);
+    sprite.sprite.setTexture(m_coordinator->getTexture(sprite.tileset_name), true);
+    sprite.sprite.setOrigin(8, 8);
+    sprite.sprite.setScale(sprite.scale, sprite.scale);
 }
 
 void RenderSprite::update() {
