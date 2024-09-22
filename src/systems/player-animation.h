@@ -2,7 +2,7 @@
 
 #include "core/system.h"
 
-class IdleSystem : public System {
+class PlayerAnimation : public System {
 public:
     void init();
     void update();

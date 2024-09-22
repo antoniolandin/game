@@ -1,7 +1,7 @@
 #include "scene-play.h"
+#include "components/animate.h"
 #include "core/types.h"
 #include "components/aabb.h"
-#include "components/idle.h"
 #include "components/input.h"
 #include "components/rect-shape.h"
 #include "components/renderable.h"
@@ -11,7 +11,6 @@
 #include "game/game-engine.h"
 #include <SFML/Window/Keyboard.hpp>
 #include <filesystem>
-#include <iostream>
 
 ScenePlay::ScenePlay(GameEngine* game_engine)
     : Scene(game_engine)
@@ -46,8 +45,8 @@ void ScenePlay::registration()
     m_coordinator.registerComponent<Renderable>();
     m_coordinator.registerComponent<Input>();
     m_coordinator.registerComponent<Sprite>();
-    m_coordinator.registerComponent<Idle>();
     m_coordinator.registerComponent<Facing>();
+    m_coordinator.registerComponent<Animate>();
 
     // register systems
     m_render_aabb_system = m_coordinator.registerSystem<RenderAABB>();
@@ -89,16 +88,25 @@ void ScenePlay::registration()
     }
     m_render_sprite_system->init();
 
-    m_idle_system = m_coordinator.registerSystem<IdleSystem>();
+    m_animation_system = m_coordinator.registerSystem<AnimationSystem>();
     {
         Signature signature;
-        signature.set(m_coordinator.getComponentType<Idle>());
+        signature.set(m_coordinator.getComponentType<Animate>());
         signature.set(m_coordinator.getComponentType<Sprite>());
-        signature.set(m_coordinator.getComponentType<Transform>());
-        signature.set(m_coordinator.getComponentType<Facing>());
-        m_coordinator.setSystemSignature<IdleSystem>(signature);
+        m_coordinator.setSystemSignature<AnimationSystem>(signature);
     }
-    m_idle_system->init();
+    m_animation_system->init();
+
+    m_player_animation_system = m_coordinator.registerSystem<PlayerAnimation>();
+    {
+        Signature signature;
+        signature.set(m_coordinator.getComponentType<Animate>());
+        signature.set(m_coordinator.getComponentType<Sprite>());
+        signature.set(m_coordinator.getComponentType<Facing>());
+        signature.set(m_coordinator.getComponentType<Input>());
+        m_coordinator.setSystemSignature<PlayerAnimation>(signature);
+    }
+    m_player_animation_system->init();
 
     // register tileset texture
     std::filesystem::path project_root = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path();
@@ -140,20 +148,49 @@ void ScenePlay::spawnPlayer()
     m_coordinator.addComponent(m_player, Renderable { &m_game_engine->window() });
     m_coordinator.addComponent(m_player, Input {});
     m_coordinator.addComponent(m_player, Facing { DOWN });
-
     m_coordinator.addComponent(m_player, Sprite {{}, "zombie_tileset", 4});
 
-    std::cout << m_coordinator.getComponent<Sprite>(m_player).tileset_name << std::endl;
-
-    m_coordinator.addComponent(m_player, Idle {
+    // PLAYER ANIMATIONS
+    float walk_duration = 0.5;
+    m_coordinator.addComponent(m_player, Animate {
         {
-            {UP, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 8)}},
-            {DOWN, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 9)}},
-            {LEFT, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 10), true}},
-            {RIGHT, Idle::Properties {getSpriteRectFromZombieTileset(m_player, 28, 10)}}
-        }
+            {"WALK_UP", Animate::Animation {walk_duration, {
+                getSpriteRectFromZombieTileset(m_player, 29, 8),
+                getSpriteRectFromZombieTileset(m_player, 30, 8),
+            }}},
+            {"WALK_DOWN", Animate::Animation {walk_duration, {
+                getSpriteRectFromZombieTileset(m_player, 29, 9),
+                getSpriteRectFromZombieTileset(m_player, 30, 9),
+            }}},
+            {"WALK_LEFT", Animate::Animation {walk_duration, {
+                getSpriteRectFromZombieTileset(m_player, 29, 10),
+                getSpriteRectFromZombieTileset(m_player, 30, 10),
+            }, true}},
+            {"WALK_RIGHT", Animate::Animation {walk_duration, {
+                getSpriteRectFromZombieTileset(m_player, 29, 10),
+                getSpriteRectFromZombieTileset(m_player, 30, 10),
+            }}},
+            {
+                "IDLE_UP", Animate::Animation {0, {
+                    getSpriteRectFromZombieTileset(m_player, 28, 8)
+            }}},
+            {
+                "IDLE_DOWN", Animate::Animation {0, {
+                    getSpriteRectFromZombieTileset(m_player, 28, 9)
+            }}},
+            {
+                "IDLE_LEFT", Animate::Animation {0, {
+                    getSpriteRectFromZombieTileset(m_player, 28, 10)
+            }, true}},
+            {
+                "IDLE_RIGHT", Animate::Animation {0, {
+                    getSpriteRectFromZombieTileset(m_player, 28, 10)
+            }}},
+        },
+        "WALK_DOWN",
     });
-
+    
+    // init systems
     m_render_aabb_system->initEntity(m_player);
     m_render_sprite_system->initEntity(m_player);
 }
@@ -204,6 +241,7 @@ void ScenePlay::doAction(const Action& action)
 
     // update the facing direction
     auto& facing = m_coordinator.getComponent<Facing>(m_player);
+
     if (m_coordinator.getComponent<Input>(m_player).up) {
         facing.direction = UP;
     } else if (m_coordinator.getComponent<Input>(m_player).down) {
@@ -220,7 +258,9 @@ void ScenePlay::render()
     m_game_engine->window().clear(sf::Color::White);
     m_render_sprite_system->update();
     m_render_aabb_system->update();
-    m_idle_system->update();
+    // m_idle_system->update();
+    m_player_animation_system->update();
+    m_animation_system->update(m_game_engine->dt());
     m_render_sprite_system->update();
 }
 

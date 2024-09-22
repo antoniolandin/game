@@ -29,7 +29,7 @@ Vec2 velocityFromInput(const Input& input)
         count++;
     }
 
-    // normaliza if the velocity is diagonal
+    // normalize if the velocity is diagonal
     if (count > 1) {
         velocity /= 1.41421356;
     }
@@ -47,10 +47,10 @@ void Movement::update(float dt)
         Vec2 previous_position = transform.position;
 
         // get the velocity
-        Vec2 velocity = velocityFromInput(input);
+        transform.velocity = velocityFromInput(input);
 
         // update the position
-        transform.position += velocity * transform.speed * dt;
+        transform.position += transform.velocity * transform.speed * dt;
         transform.previous_position = previous_position;
     }
 }

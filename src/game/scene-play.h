@@ -5,7 +5,8 @@
 #include "systems/render-aabb.h"
 #include "systems/collision.h"
 #include "systems/render-sprite.h"
-#include "systems/idle.h"
+#include "systems/animate.h"
+#include "systems/player-animation.h"
 
 class ScenePlay : public Scene {
 private:
@@ -17,7 +18,8 @@ private:
     std::shared_ptr<Movement> m_movement_system;
     std::shared_ptr<Collision> m_collision_system;
     std::shared_ptr<RenderSprite> m_render_sprite_system; 
-    std::shared_ptr<IdleSystem> m_idle_system;
+    std::shared_ptr<AnimationSystem> m_animation_system;
+    std::shared_ptr<PlayerAnimation> m_player_animation_system;
     
     // scene methods
     void registration();
