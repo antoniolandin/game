@@ -25,7 +25,7 @@ void IdleSystem::update()
         sprite.sprite.setTextureRect(idle.sprite_rects.at(facing.direction).rect);
         if (idle.sprite_rects.at(facing.direction).flip) {
             sprite.sprite.setScale(-sprite.scale, sprite.scale);
-        } else if (facing.direction == LEFT) {
+        } else {
             sprite.sprite.setScale(sprite.scale, sprite.scale);
         }
     }

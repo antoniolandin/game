@@ -183,16 +183,12 @@ void ScenePlay::doAction(const Action& action)
             m_paused = !m_paused;
         } else if (action.name == "MOVE_UP") {
             m_coordinator.getComponent<Input>(m_player).up = true;
-            m_coordinator.getComponent<Facing>(m_player).direction = UP;
         } else if (action.name == "MOVE_DOWN") {
             m_coordinator.getComponent<Input>(m_player).down = true;
-            m_coordinator.getComponent<Facing>(m_player).direction = DOWN;
         } else if (action.name == "MOVE_LEFT") {
             m_coordinator.getComponent<Input>(m_player).left = true;
-            m_coordinator.getComponent<Facing>(m_player).direction = LEFT;
         } else if (action.name == "MOVE_RIGHT") {
             m_coordinator.getComponent<Input>(m_player).right = true;
-            m_coordinator.getComponent<Facing>(m_player).direction = RIGHT;
         }
     } else if (action.type == ACTION_END) {
         if (action.name == "MOVE_UP") {
@@ -204,6 +200,18 @@ void ScenePlay::doAction(const Action& action)
         } else if (action.name == "MOVE_RIGHT") {
             m_coordinator.getComponent<Input>(m_player).right = false;
         }
+    }
+
+    // update the facing direction
+    auto& facing = m_coordinator.getComponent<Facing>(m_player);
+    if (m_coordinator.getComponent<Input>(m_player).up) {
+        facing.direction = UP;
+    } else if (m_coordinator.getComponent<Input>(m_player).down) {
+        facing.direction = DOWN;
+    } else if (m_coordinator.getComponent<Input>(m_player).left) {
+        facing.direction = LEFT;
+    } else if (m_coordinator.getComponent<Input>(m_player).right) {
+        facing.direction = RIGHT;
     }
 }
 
