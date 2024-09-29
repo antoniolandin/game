@@ -23,7 +23,7 @@ private:
     
     // scene methods
     void registration();
-    sf::IntRect getSpriteRectFromZombieTileset(const Entity entity, const int x, const int y);
+    sf::IntRect getSpriteRectFromZombieTileset(const int x, const int y);
     void spawnPlayer();
     void spawnEnemy();
 

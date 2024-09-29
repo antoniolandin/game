@@ -114,11 +114,8 @@ void ScenePlay::registration()
 }
 
 // get the sprite from the zombie tileset (it has weird spacing)
-sf::IntRect ScenePlay::getSpriteRectFromZombieTileset(const Entity entity, const int x, const int y)
+sf::IntRect ScenePlay::getSpriteRectFromZombieTileset(const int x, const int y)
 {
-    // get the sprite component
-    auto& sprite = m_coordinator.getComponent<Sprite>(entity);
-
     // define the tileset properties
     const int tile_width = 16;
     const int tile_height = 16;
@@ -155,36 +152,36 @@ void ScenePlay::spawnPlayer()
     m_coordinator.addComponent(m_player, Animate {
         {
             {"WALK_UP", Animate::Animation {walk_duration, {
-                getSpriteRectFromZombieTileset(m_player, 29, 8),
-                getSpriteRectFromZombieTileset(m_player, 30, 8),
+                getSpriteRectFromZombieTileset(29, 8),
+                getSpriteRectFromZombieTileset(30, 8),
             }}},
             {"WALK_DOWN", Animate::Animation {walk_duration, {
-                getSpriteRectFromZombieTileset(m_player, 29, 9),
-                getSpriteRectFromZombieTileset(m_player, 30, 9),
+                getSpriteRectFromZombieTileset(29, 9),
+                getSpriteRectFromZombieTileset(30, 9),
             }}},
             {"WALK_LEFT", Animate::Animation {walk_duration, {
-                getSpriteRectFromZombieTileset(m_player, 29, 10),
-                getSpriteRectFromZombieTileset(m_player, 30, 10),
+                getSpriteRectFromZombieTileset(29, 10),
+                getSpriteRectFromZombieTileset(30, 10),
             }, true}},
             {"WALK_RIGHT", Animate::Animation {walk_duration, {
-                getSpriteRectFromZombieTileset(m_player, 29, 10),
-                getSpriteRectFromZombieTileset(m_player, 30, 10),
+                getSpriteRectFromZombieTileset(29, 10),
+                getSpriteRectFromZombieTileset(30, 10),
             }}},
             {
                 "IDLE_UP", Animate::Animation {0, {
-                    getSpriteRectFromZombieTileset(m_player, 28, 8)
+                    getSpriteRectFromZombieTileset(28, 8)
             }}},
             {
                 "IDLE_DOWN", Animate::Animation {0, {
-                    getSpriteRectFromZombieTileset(m_player, 28, 9)
+                    getSpriteRectFromZombieTileset(28, 9)
             }}},
             {
                 "IDLE_LEFT", Animate::Animation {0, {
-                    getSpriteRectFromZombieTileset(m_player, 28, 10)
+                    getSpriteRectFromZombieTileset(28, 10)
             }, true}},
             {
                 "IDLE_RIGHT", Animate::Animation {0, {
-                    getSpriteRectFromZombieTileset(m_player, 28, 10)
+                    getSpriteRectFromZombieTileset(28, 10)
             }}},
         },
         "WALK_DOWN",
