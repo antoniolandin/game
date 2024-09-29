@@ -1,0 +1,100 @@
+[
+    {
+        "name": "PLAYER_WALK_UP",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 29,
+                "y": 8
+            },
+            {
+                "x": 30,
+                "y": 8
+            }
+        ]
+    },
+    {
+        "name": "PLAYER_WALK_DOWN",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 29,
+                "y": 9
+            },
+            {
+                "x": 30,
+                "y": 9
+            }
+        ]
+    },
+    {
+        "name": "PLAYER_WALK_LEFT",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 29,
+                "y": 10
+            },
+            {
+                "x": 30,
+                "y": 10
+            }
+        ],
+        "flip": true
+    },
+    {
+        "name": "PLAYER_WALK_RIGHT",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 29,
+                "y": 10
+            },
+            {
+                "x": 30,
+                "y": 10
+            }
+        ]
+    },
+    {
+        "name": "PLAYER_IDLE_UP",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 28,
+                "y": 8
+            }
+        ]
+    },
+    {
+        "name": "PLAYER_IDLE_DOWN",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 28,
+                "y": 9
+            }
+        ]
+    },
+    {
+        "name": "PLAYER_IDLE_LEFT",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 28,
+                "y": 10
+            }
+        ],
+        "flip": true
+    },
+    {
+        "name": "PLAYER_IDLE_RIGHT",
+        "tileset": "zombie_tileset",
+        "frames": [
+            {
+                "x": 28,
+                "y": 10
+            }
+        ]
+    }
+]
